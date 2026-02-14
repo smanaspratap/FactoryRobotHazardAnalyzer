@@ -17,27 +17,25 @@ public class FactoryRobotHazardAnalyzer {
         System.out.println("Enter Machinery State (Worn/Faulty/Critical):");
         String machineryState = sc.nextLine();
 
-        double hazardRisk = calculateHazardRisk(armPrecision, workerDensity, machineryState);
-        // In UC5 the method handles validation by returning Double.NaN on error (we'll replace with exceptions in UC6)
-        if (Double.isNaN(hazardRisk)) {
-            // calculateHazardRisk already printed error messages in UC5 approach
-        } else {
+        try {
+            double hazardRisk = calculateHazardRisk(armPrecision, workerDensity, machineryState);
             System.out.println("Robot Hazard Risk Score: " + hazardRisk);
+        } catch (RobotSafetyException e) {
+            // Print the exception message exactly (assignment requires the exception message to display)
+            System.out.println(e.getMessage());
         }
 
         sc.close();
     }
 
-    // UC5: method encapsulating calculation and validation (no custom exception yet)
-    public static double calculateHazardRisk(double armPrecision, int workerDensity, String machineryState) {
+    // UC6: method now throws RobotSafetyException for invalid inputs
+    public static double calculateHazardRisk(double armPrecision, int workerDensity, String machineryState) throws RobotSafetyException {
         if (armPrecision < 0.0 || armPrecision > 1.0) {
-            System.out.println("Error: Arm precision must be 0.0-1.0");
-            return Double.NaN;
+            throw new RobotSafetyException("Error: Arm precision must be 0.0-1.0");
         }
 
         if (workerDensity < 1 || workerDensity > 20) {
-            System.out.println("Error: Worker density must be 1-20");
-            return Double.NaN;
+            throw new RobotSafetyException("Error: Worker density must be 1-20");
         }
 
         double machineRiskFactor;
@@ -48,8 +46,7 @@ public class FactoryRobotHazardAnalyzer {
         } else if ("Critical".equals(machineryState)) {
             machineRiskFactor = 3.0;
         } else {
-            System.out.println("Error: Unsupported machinery state");
-            return Double.NaN;
+            throw new RobotSafetyException("Error: Unsupported machinery state");
         }
 
         return ((1.0 - armPrecision) * 15.0) + (workerDensity * machineRiskFactor);
