@@ -16,10 +16,18 @@ public class FactoryRobotHazardAnalyzer {
         System.out.println("Enter Machinery State (Worn/Faulty/Critical):");
         String machineryState = sc.nextLine();
 
-        // Echo inputs back to the user (UC2 requirement)
-        System.out.println("Arm Precision: " + armPrecision);
-        System.out.println("Worker Density: " + workerDensity);
-        System.out.println("Machinery State: " + machineryState);
+        // --- No validation here (UC3) ---
+        double machineRiskFactor = 0.0;
+        if ("Worn".equals(machineryState)) {
+            machineRiskFactor = 1.3;
+        } else if ("Faulty".equals(machineryState)) {
+            machineRiskFactor = 2.0;
+        } else if ("Critical".equals(machineryState)) {
+            machineRiskFactor = 3.0;
+        } // assume valid for UC3
+
+        double hazardRisk = ((1.0 - armPrecision) * 15.0) + (workerDensity * machineRiskFactor);
+        System.out.println("Robot Hazard Risk Score: " + hazardRisk);
 
         sc.close();
     }
